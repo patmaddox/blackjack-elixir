@@ -13,6 +13,12 @@ defmodule Blackjack do
     |> decrease_cash(amount)
   end
 
+  def cash_out(player, amount) do
+    player
+    |> increase_cash(amount)
+    |> decrease_chips(amount)
+  end
+
   defp increase_chips(player, amount) do
     Map.update!(player, :chips, fn old_chips -> old_chips + amount end)
   end
@@ -22,6 +28,18 @@ defmodule Blackjack do
       {:error, "Not enough cash"}
     else
       Map.update!(player, :cash, fn old_cash -> old_cash - amount end)
+    end
+  end
+
+  defp increase_cash(player, amount) do
+    Map.update!(player, :cash, fn old_cash -> old_cash + amount end)
+  end
+
+  defp decrease_chips(player, amount) do
+    if amount > player.chips do
+      {:error, "Not enough chips"}
+    else
+      Map.update!(player, :chips, fn old_chips -> old_chips - amount end)
     end
   end
 end
