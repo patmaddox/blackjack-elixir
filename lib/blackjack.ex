@@ -8,7 +8,8 @@ defmodule Blackjack do
   end
 
   def buy_chips(player, amount) do
-    increase_chips(player, amount)
+    player
+    |> increase_chips(amount)
     |> decrease_cash(amount)
   end
 
@@ -17,6 +18,10 @@ defmodule Blackjack do
   end
 
   defp decrease_cash(player, amount) do
-    Map.update!(player, :cash, fn old_cash -> old_cash - amount end)
+    if amount > player.cash do
+      {:error, "Not enough cash"}
+    else
+      Map.update!(player, :cash, fn old_cash -> old_cash - amount end)
+    end
   end
 end

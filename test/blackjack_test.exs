@@ -26,5 +26,13 @@ defmodule BlackjackTest do
 
       assert player == %Blackjack.Player{name: "Pat", cash: 50, chips: 50}
     end
+
+    test "doesn't let you overspend" do
+      {:error, message} =
+        Blackjack.new_player("Pat", 100)
+        |> Blackjack.buy_chips(101)
+
+      assert message == "Not enough cash"
+    end
   end
 end
