@@ -5,27 +5,27 @@ defmodule Blackjack.Player do
     %__MODULE__{name: name, cash: cash, chips: 0}
   end
 
-  def buy_chips(player, amount) do
-    player
-    |> increase(:chips, amount)
-    |> decrease(:cash, amount)
+  def buy_chips(player_or_error, amount) do
+    transfer(player_or_error, :cash, :chips, amount)
   end
 
-  def cash_out(player, amount) do
-    player
-    |> increase(:cash, amount)
-    |> decrease(:chips, amount)
+  def cash_out(player_or_error, amount) do
+    transfer(player_or_error, :chips, :cash, amount)
   end
 
-  defp increase(player, money_bag, amount) do
-    Map.update!(player, money_bag, fn current_value -> current_value + amount end)
-  end
-
-  defp decrease(player, money_bag, amount) do
-    if amount > Map.get(player, money_bag) do
-      {:error, "Not enough #{money_bag}"}
+  defp transfer(%__MODULE__{} = player, from, to, amount) do
+    if Map.get(player, from) < amount do
+      {:error, "Not enough #{from}"}
     else
-      Map.update!(player, money_bag, fn current_value -> current_value - amount end)
+      player
+      |> adjust(from, -amount)
+      |> adjust(to, amount)
     end
+  end
+
+  defp transfer({:error, _} = error, _from, _to, _amount), do: error
+
+  defp adjust(player, money_bag, amount) do
+    Map.update!(player, money_bag, & &1 + amount)
   end
 end

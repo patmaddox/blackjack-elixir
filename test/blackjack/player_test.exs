@@ -65,4 +65,14 @@ defmodule Blackjack.PlayerTest do
       assert message == "Not enough chips"
     end
   end
+
+  test "pipe the things" do
+    {:error, message} =
+      Player.new("Pat", 100)
+      |> Player.buy_chips(100)
+      |> Player.cash_out(101)
+      |> Player.buy_chips(101)
+
+    assert message == "Not enough chips"
+  end
 end
